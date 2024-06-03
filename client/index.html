@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Cliente SFTP</title>
+</head>
+<style>
+  body{
+    background-color: black;
+    color: white;
+  }
+</style>
+<body>
+  <h1>Cliente SFTP</h1>
+
+    <input type="text" id="user" placeholder="Usuario" required value="1">
+    <input type="text" id="pass" placeholder="Contrase&ntilde;a" required value="2">
+    <button id="connect"  type="submit">Conectar</button>
+    <button id="disconnect" disabled>Desconectar</button>  
+
+    
+
+  <hr>
+    <input type="text" id="message" placeholder="Escribe un mensaje" disabled>
+    <button id="send" disabled>Enviar</button>
+  <hr>
+ 
+  <pre id="log"></pre>
+
+  <div id="sftpCrud"></div>
+
+  <script src="./socket.js"></script>
+</body>
+</html>
