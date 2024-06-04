@@ -6,13 +6,13 @@ const user = document.getElementById('user')
 const pass = document.getElementById('pass')
 const log = document.getElementById('log')
 const sftpCrud = document.getElementById('sftpCrud')
+const inPath = document.getElementById('inPath')
 
-connectButton.addEventListener('click',(e)=>{
+connectButton.addEventListener('click', (e) => {
   e.preventDefault();
-  if(user.value.trim() || pass.value.trim()) {
-    console.log('con datos');
+  if (user.value.trim() || pass.value.trim()) {
     openSocket()
-  }else{
+  } else {
     console.log('sin datos');
   }
 
@@ -20,7 +20,7 @@ connectButton.addEventListener('click',(e)=>{
 
 const openSocket = () => {
   socket = new WebSocket('ws://localhost:8080')
-  socket.addEventListener('open',()=> {
+  socket.addEventListener('open', () => {
 
     socket.send(
       JSON.stringify({
@@ -31,7 +31,6 @@ const openSocket = () => {
         password: 'D123#$%67q'
       })
     );
-    eventLog('Conectado al servidor')
     connectButton.disabled = true
     disconnectButton.disabled = false;
     messageInput.disabled = false;
@@ -46,13 +45,24 @@ const openSocket = () => {
     sendButton.disabled = true;
   });
 
-  socket.addEventListener('error', (error) => {    
+  socket.addEventListener('error', (error) => {
     eventLog(`Error: ${error.message}`)
   });
-  socket.addEventListener('message', (event) => {  
+  socket.addEventListener('message', (event) => {
     const message = JSON.parse(event.data);
 
-  
+    if (message.status === 'connected') {
+      eventLog(`Conexion sftp establecida`)
+      socket.send(JSON.stringify({ type: 'list', path: inPath.value, }))
+
+    } else if (message.status === 'error') {
+      eventLog(`Error: ${message.message}`)
+    } else if (message.status === 'list') {
+      listPath(message.objData)
+    } else if (message.status === 'get') {
+      console.log(message);
+    }
+
     eventLog(`Servidor: ${event.data}`) //cuando el servidor contesta
 
   });
@@ -75,3 +85,24 @@ sendButton.addEventListener('click', () => {
   eventLog(`Cliente: ${message}`)
   messageInput.value = '';
 });
+
+
+const listPath = (data) => {
+  data.forEach(element => {
+    if (element.type === 'd') {
+      console.log(`Directory: ${element.name}`);
+      sftpCrud.innerHTML += `<p>Carpeta ${element.name}</p>`
+    } else if (element.type === '-') {
+      console.log(`File: ${element.name}`);
+      sftpCrud.innerHTML += `<p onclick="handleClick('${element.name}')">Archivo ${element.name}</p>`
+    }
+  });
+}
+
+const handleClick = (data) => {
+  socket.send(JSON.stringify({
+     type: 'get',
+     file: data,
+     path: inPath.value 
+    }))
+};

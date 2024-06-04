@@ -7,8 +7,8 @@
 </head>
 <style>
   body{
-    background-color: black;
-    color: white;
+    background-color: rgb(149, 154, 168);
+    color: rgb(0, 0, 0);
   }
 </style>
 <body>
@@ -25,9 +25,11 @@
     <input type="text" id="message" placeholder="Escribe un mensaje" disabled>
     <button id="send" disabled>Enviar</button>
   <hr>
- 
+  <h5>Logs de eventos</h5>
   <pre id="log"></pre>
-
+  <hr>
+  <h5>SFTP</h5>
+  <input type="text" id="inPath" disabled  value="/home/u466684088">
   <div id="sftpCrud"></div>
 
   <script src="./socket.js"></script>
