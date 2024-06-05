@@ -18,19 +18,20 @@
     <input type="text" id="pass" placeholder="Contrase&ntilde;a" required value="2">
     <button id="connect"  type="submit">Conectar</button>
     <button id="disconnect" disabled>Desconectar</button>  
+    <hr>
+    <h5>Ruta actual</h5>
+    <input type="text" id="inPath" disabled style="width: 600px;">
+    <hr>
 
-    
-
-  <hr>
-    <input type="text" id="message" placeholder="Escribe un mensaje" disabled>
-    <button id="send" disabled>Enviar</button>
   <hr>
   <h5>Logs de eventos</h5>
   <pre id="log"></pre>
   <hr>
-  <h5>SFTP</h5>
-  <input type="text" id="inPath" disabled  value="/home/u466684088">
-  <div id="sftpCrud"></div>
+
+  <div>
+    <p id="returnPath">Folder ..</p>
+    <div id="sftpCrud"></div>
+  </div>
 
   <script src="./socket.js"></script>
 </body>

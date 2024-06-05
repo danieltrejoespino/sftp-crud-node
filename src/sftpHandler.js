@@ -13,7 +13,7 @@ async function handleSFTPCommand(ws, command) {
           password: command.password,
         });
         console.log('Connected');
-        ws.send(JSON.stringify({ status: 'connected' }));
+        ws.send(JSON.stringify({ status: 'success', method : 'connected' }));
         break;
 
       case 'disconnect':
@@ -26,14 +26,19 @@ async function handleSFTPCommand(ws, command) {
       case 'list':
         console.log('Listing directory:', command.path);
         const data = await sftp.list(command.path);
-        ws.send(JSON.stringify({ status: 'list', objData: data }));
+        ws.send(JSON.stringify({ status: 'success', method : 'list', objData: data }));
         break;
 
       case 'get':
         console.log('Getting file:', command.file);
+
         let remoteFilePath = `${command.path}/${command.file}`;
-        await sftp.get(remoteFilePath, `public/${command.file}`);
-        ws.send(JSON.stringify({ status: 'get', data: 'File downloaded successfully' }));
+
+        const objGet = await sftp.get(remoteFilePath);        
+        // await sftp.get(remoteFilePath, `public/${command.file}`);
+        ws.send(JSON.stringify({ status: 'success', method : 'get', data: objGet.toString('base64'), filename: `${command.file}.csv` }));
+
+        // ws.send(JSON.stringify({ status: 'get', data: 'File downloaded successfully' }));
         break;
 
       default:
