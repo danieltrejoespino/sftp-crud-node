@@ -26,6 +26,7 @@ async function handleSFTPCommand(ws, command) {
       case 'list':
         console.log('Listing directory:', command.path);
         const data = await sftp.list(command.path);
+        console.log(data);
         ws.send(JSON.stringify({ status: 'success', method : 'list', objData: data }));
         break;
 
