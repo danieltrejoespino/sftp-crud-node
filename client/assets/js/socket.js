@@ -7,6 +7,7 @@ const log = document.getElementById('log')
 const sftpCrud = document.getElementById('sftpCrud')
 const inPath = document.getElementById('inPath')
 const returnPath = document.getElementById('returnPath')
+const tblSftp = document.getElementById('tblSftp')
 
 let PATH = ['/home/u466684088']
 // let PATH = ['/home/u466684088/domains/jaudica.com/outbox']
@@ -68,6 +69,7 @@ const openSocket = () => {
     disconnectButton.disabled = true;
     sftpCrud.innerHTML = ""
     returnPath.hidden = true
+    tblSftp.hidden = true
 
   });
 
@@ -80,6 +82,7 @@ const openSocket = () => {
 
     if (message.method === 'connected') {
       returnPath.hidden = false
+      tblSftp.hidden = false
       eventLog(`Conexion sftp establecida`)
       socket.send(JSON.stringify({ type: 'list', path: createPath(0,PATH) }))
 
