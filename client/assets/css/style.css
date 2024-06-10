@@ -19,13 +19,13 @@ body {
 #returnPath{
   cursor: pointer;
 }
-
+/* 
 #returnPath:hover,
 .files:hover {
-  background-color: #2f5b75; /* Color de fondo al pasar el cursor */
+  background-color: #2f5b75; 
   color: white;
   font-weight: bold;
-}
+} */
 
 .files{
   cursor: pointer;

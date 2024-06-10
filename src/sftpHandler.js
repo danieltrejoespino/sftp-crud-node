@@ -1,5 +1,15 @@
 const Client = require('ssh2-sftp-client');
 const sftp = new Client();
+const fs = require('fs');
+const path = require('path');
+
+async function ensureDirectoryExistence(filePath) {
+  const dirname = path.dirname(filePath);
+  if (fs.existsSync(dirname)) {
+    return true;
+  }
+  await fs.promises.mkdir(dirname, { recursive: true });
+}
 
 async function handleSFTPCommand(ws, command) {
   try {
@@ -13,7 +23,7 @@ async function handleSFTPCommand(ws, command) {
           password: command.password,
         });
         console.log('Connected');
-        ws.send(JSON.stringify({ status: 'success', method : 'connected' }));
+        ws.send(JSON.stringify({ status: 'success', method: 'connected' }));
         break;
 
       case 'disconnect':
@@ -24,22 +34,44 @@ async function handleSFTPCommand(ws, command) {
         break;
 
       case 'list':
-        console.log('Listing directory:', command.path);
         const data = await sftp.list(command.path);
-        console.log(data);
-        ws.send(JSON.stringify({ status: 'success', method : 'list', objData: data }));
+        ws.send(JSON.stringify({ status: 'success', method: 'list', objData: data }));
         break;
 
       case 'get':
         console.log('Getting file:', command.file);
-
         let remoteFilePath = `${command.path}/${command.file}`;
+        const fileData = await sftp.get(remoteFilePath);
+        const base64FileData = fileData.toString('base64');
+        const fileName = remoteFilePath.split('/').pop();
+        ws.send(JSON.stringify({
+          status: 'success',
+          method: 'get',
+          fileName: fileName,
+          fileData: base64FileData
+        }));
+        break;
 
-        const objGet = await sftp.get(remoteFilePath);        
-        // await sftp.get(remoteFilePath, `public/${command.file}`);
-        ws.send(JSON.stringify({ status: 'success', method : 'get', data: objGet.toString('base64'), filename: `${command.file}.csv` }));
+      case 'delete':
+        let deletePath = `${command.path}/${command.file}`;
+        await sftp.delete(deletePath);
+        ws.send(JSON.stringify({
+          status: 'success',
+          method: 'delete',
+          fileName: command.file
+        }));
+        break;
 
-        // ws.send(JSON.stringify({ status: 'get', data: 'File downloaded successfully' }));
+      case 'upload':
+        const uploadPath = `${command.path}/${command.filename}`;
+        await ensureDirectoryExistence(uploadPath);
+        const fileContent = Buffer.from(command.fileContent, 'base64');
+        await sftp.put(fileContent, uploadPath);        
+        ws.send(JSON.stringify({
+          status: 'success',
+          method: 'upload',
+          fileName: command.filename
+        }));
         break;
 
       default:
