@@ -52,7 +52,7 @@ const formatDate = (accessTime) => {
 }
 
 const eventLog = (text) => {  
-  // log.textContent += `${text} \n `
+  log.textContent += `${text} \n `
 }
 
 connectButton.addEventListener('click', (e) => {
@@ -66,7 +66,7 @@ connectButton.addEventListener('click', (e) => {
 })
 
 const openSocket = () => {
-  socket = new WebSocket('ws://localhost:8080')
+  socket = new WebSocket('ws://172.20.2.57:4001')
   socket.addEventListener('open', () => {
 
     socket.send(
@@ -108,8 +108,10 @@ const openSocket = () => {
       eventLog(`Conexion sftp establecida`)
       socket.send(JSON.stringify({ type: 'list', path: createPath(0,PATH) }))
 
-    } else if (message.method === 'error') {
+    } else if (message.method === 'errorConnected') {
       eventLog(`Error: ${message.message}`)
+      //!Aqui agregar cuando la sesión esta ocupada
+
 
     } else if (message.method === 'list') {
       listPath(message.objData)
@@ -139,7 +141,7 @@ const openSocket = () => {
     }
 
 
-    eventLog(`Servidor: ${event.data}`) //cuando el servidor contesta
+    // eventLog(`Servidor: ${event.data}`) //cuando el servidor contesta
 
   });
 
